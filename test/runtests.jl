@@ -1,6 +1,10 @@
 using TimeSeriesUtils
+using Polynomials
+using LinearAlgebra
 using Test
 
-@testset "TimeSeriesUtils.jl" begin
-    # Write your tests here.
-end
+include("GeneralUtilsTest.jl")
+include("ARIMAUtilsTest.jl")
+include("ARTFIMAUtilsTest.jl")
+include("SpectralUtilsTest.jl")
+

@@ -19,15 +19,15 @@ end
 R function that decompose a time series into seasonal, trend and irregular components using loess.
 
 Examples:
-```jldoctest
+```julia-repl
+
 julia> T = 10*12; 
+
 julia> x = 0.01*(1:T) .+ sin.((1:T)*(2pi/12)) .+ 0.2*randn(T)
+
 julia> stl_object = stl(x, frequency = 12)
+
 julia> stl_object
-julia> plot(x, label ="time series", c = "black", legend = :topright)
-julia> plot!(stl_object[:time_series][:,1], label = "seasonal", c = "red")
-julia> plot!(stl_object[:time_series][:,2], label = "trend", c = "blue")
-julia> plot!(stl_object[:time_series][:,3], label = "remainder", c = "green")
 ```
 
 """
@@ -48,15 +48,14 @@ end
 R function that decompose a time series into seasonal, trend and irregular components using loess. Decompose a time series into seasonal, trend and remainder components. Allows for multiple seasonal components with different periods.
 
 Examples:
-```jldoctest
+```julia-repl
 julia> T = 10*12; 
+
 julia> x = 0.01*(1:T) .+ sin.((1:T)*(2pi/12)) .+ sin.((1:T)*(2pi/365.25)) .+ 0.2*randn(T)
+
 julia> mstl_object = mstl(x; seasonal_periods = [12,365.25])
+
 julia> mstl_object
-julia> plot(x, label ="time series", c = "black", legend = :topright)
-julia> plot!(mstl_object[:time_series][:,1], label = "seasonal", c = "red")
-julia> plot!(mstl_object[:time_series][:,2], label = "trend", c = "blue")
-julia> plot!(mstl_object[:time_series][:,3], label = "remainder", c = "green")
 ```
 
 """
@@ -79,7 +78,7 @@ R function that interpolates missing values in a time series inplace.
 See also [`nainterpret`](@ref) for an not in place version.
 
 Examples:
-```jldoctest
+```julia-repl
 julia> nainterpret!([4, missing, 10])
 3-element Vector{Float64}:
   4.0
@@ -104,7 +103,7 @@ R function that interpolates missing values in a time series.
 See also [`nainterpret!`](@ref) for an inplace version.
 
 Examples:
-```jldoctest
+```julia-repl
 julia> y = nainterpret([4, missing, 10])
 3-element Vector{Float64}:
   4.0

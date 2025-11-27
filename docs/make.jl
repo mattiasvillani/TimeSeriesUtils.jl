@@ -1,3 +1,11 @@
+using Pkg
+
+# Activate the docs environment in docs/Project.toml
+Pkg.activate(@__DIR__)
+Pkg.instantiate()  # optional but good to keep
+
+@show Base.active_project()  # temporary debug, can be removed later
+
 using TimeSeriesUtils
 using Documenter
 
@@ -14,6 +22,10 @@ makedocs(;
     ),
     pages=[
         "Home" => "index.md",
+        "ARIMA utilities" => "ARIMAUtils.md",
+        "ARTFIMA utilities" => "ARTFIMAUtils.md",
+        "Spectral utilities" => "SpectralUtils.md",
+        "General utilities" => "GeneralUtils.md"
     ],
 )
 

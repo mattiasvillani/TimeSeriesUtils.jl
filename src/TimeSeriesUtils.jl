@@ -1,5 +1,9 @@
 module TimeSeriesUtils
 
+using Plots, Distributions, FFTW, Polynomials
+using LaTeXStrings
+using RCall
+
 include("GeneralUtils.jl")
 export ts, stl, mstl, nainterpret!, nainterpret
 

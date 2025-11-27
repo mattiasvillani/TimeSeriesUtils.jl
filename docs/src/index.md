@@ -1,14 +1,10 @@
-```@meta
-CurrentModule = TimeSeriesUtils
-```
+# TimeSeriesUtils.jl
 
-# TimeSeriesUtils
+## Purpose
 
-Documentation for [TimeSeriesUtils](https://github.com/mattiasvillani/TimeSeriesUtils.jl).
+The TimeSeriesUtils.jl package contains general functions and models for time series and spectral analysis.
+
+## Index
 
 ```@index
-```
-
-```@autodocs
-Modules = [TimeSeriesUtils]
 ```

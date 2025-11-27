@@ -1,0 +1,13 @@
+```@docs
+ARMAacf
+arma_reparam
+inv_arma_reparam
+check_stationarity
+sarma_reparam
+Arima
+simARMA
+ℓARMA
+SpecDensARMA
+SpecDensSARMA
+SpecDensMultiSARMA
+```
