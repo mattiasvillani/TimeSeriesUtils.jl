@@ -20,8 +20,8 @@ export ℓwhittle
 export simProcessSpectral
 
 include("ARIMAUtils.jl")
-export ARMAacf, arma_reparam, inv_arma_reparam, check_stationarity
-export sarma_reparam
+export ARMAacf, arma_reparam, inv_arma_reparam, arma_reparam_partials, sarma_reparam
+export check_stationarity, sim_uniformAR
 export Arima, simARMA, ℓARMA
 export SpecDensARMA, SpecDensSARMA, SpecDensMultiSARMA, SpecDensARTFIMA
 

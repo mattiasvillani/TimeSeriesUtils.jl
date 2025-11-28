@@ -171,6 +171,31 @@ function sarma_reparam(θ, Θ, s, activeLags = nothing; ztrans = "monahan",
 end
 
 
+# Compute AR parameters from partial autocorrelations
+function arma_reparam_partials(P::Vector; negative_signs = true)
+    p = length(P)
+    if negative_signs
+        P = -P
+    end
+    ϕ = zeros(eltype(P), p, p) # Not sure we even need to allocate, but let's not worry about that.
+    ϕ[1,1] = P[1]
+    for k = 2:p
+        for j = 1:k
+            if k == j
+                ϕ[k, j] = P[k]
+            else
+                ϕ[k, j] = ϕ[k-1, j] + P[k]*ϕ[k-1, k-j]
+            end
+        end
+    end
+    if negative_signs
+        return -ϕ[end,:] # returns ϕ in polynomial ϕ(B) = 1 - ϕ₁B - ϕ₂B² - .... used for AR
+    else
+        return ϕ[end,:] # returns ϕ in polynomial ϕ(B) = 1 + ϕ₁B + ϕ₂B² + ... used for MA
+    end
+end
+
+
 """ 
     Arima(y; order = [0,0,0], seasonal = [0,0,0], xreg = nothing, include_mean = true,
         include_drift = false, include_constant = true, frequency = 1, deltat = 1) 
@@ -436,3 +461,25 @@ function SpecDensARTFIMA(ω, ϕ, θ, d, λ, σ²)
 		abs(1-exp(-(λ+im*ω)))^(-2*d)
 	return specDens
 end 
+
+
+"""
+    Simulate from a uniform prior for AR(p) over stationary region by simulating partials.
+"""
+function sim_uniformAR(p, nsim, trans = "monahan")
+    if (trans != "monahan")
+        error("Only 'monahan' transformation is currently implemented")
+    end     
+
+    Psim = zeros(nsim,p)
+    ϕsim = zeros(nsim,p)
+    betadists = []
+    for k = 1:p
+        push!(betadists, -1 + 2*Beta((k+1)/2, floor(k/2) + 1))
+    end
+    for i = 1:nsim
+        Psim[i,:] = rand.(betadists)
+        ϕsim[i,:] = arma_reparam_partials(Psim[i,:])
+    end
+    return ϕsim, Psim
+end
