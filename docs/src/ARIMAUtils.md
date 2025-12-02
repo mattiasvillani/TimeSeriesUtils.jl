@@ -3,6 +3,7 @@ ARMAacf
 arma_reparam
 inv_arma_reparam
 check_stationarity
+sim_uniformAR
 sarma_reparam
 Arima
 simARMA
@@ -10,4 +11,5 @@ simARMA
 SpecDensARMA
 SpecDensSARMA
 SpecDensMultiSARMA
+SpecDensARTFIMA
 ```

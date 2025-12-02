@@ -23,7 +23,6 @@ makedocs(;
     pages=[
         "Home" => "index.md",
         "ARIMA utilities" => "ARIMAUtils.md",
-        "ARTFIMA utilities" => "ARTFIMAUtils.md",
         "Spectral utilities" => "SpectralUtils.md",
         "General utilities" => "GeneralUtils.md"
     ],
