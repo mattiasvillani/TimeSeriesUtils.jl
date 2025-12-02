@@ -37,8 +37,8 @@ jobs:
           r-version: 'release'   # or a fixed version if you prefer
       - name: Install R packages for RCall
         run: |
+          echo "LD_LIBRARY_PATH=$(R RHOME)/lib:$LD_LIBRARY_PATH" >> $GITHUB_ENV
           Rscript -e 'options(repos = c(CRAN = "https://cloud.r-project.org")); install.packages(c("forecast", "psd"))'
-      - run: echo "LD_LIBRARY_PATH=$(R RHOME)/lib:$LD_LIBRARY_PATH" >> $GITHUB_ENV
       - uses: julia-actions/setup-julia@v2
         with:
           version: ${{ matrix.version }}
@@ -70,8 +70,8 @@ jobs:
           r-version: 'release'
       - name: Install R packages for RCall
         run: |
+          echo "LD_LIBRARY_PATH=$(R RHOME)/lib:$LD_LIBRARY_PATH" >> $GITHUB_ENV
           Rscript -e 'options(repos = c(CRAN = "https://cloud.r-project.org")); install.packages(c("forecast", "psd"))'
-      - run: echo "LD_LIBRARY_PATH=$(R RHOME)/lib:$LD_LIBRARY_PATH" >> $GITHUB_ENV
       - uses: julia-actions/cache@v2
       - name: Configure doc environment
         shell: julia --project=docs --color=yes {0}
