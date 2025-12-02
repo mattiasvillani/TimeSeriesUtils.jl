@@ -23,14 +23,14 @@ end
 
 
 """ 
-    arma_reparam(x::Vector [, ztrans = "monahan", negative_signs = true]) 
+    arma_reparam(x::Vector [, pacf_map = "monahan", negative_signs = true]) 
 
 Takes a p-dim vector `x` and returns parameters restricted to the have roots outside the unit circle, i.e. stationary(AR) or invertible (MA). The mapping is performed via the partial autocorrelations, P as: x -> P -> ϕ.
 
-If `ztrans == "sigmoid"`, then the partial autocorrelations are parameterized as 
+If `pacf_map == "sigmoid"`, then the partial autocorrelations are parameterized as 
     P = (exp(x) - 1) / (exp(x) + 1 )
 
-If `ztrans == "monahan"`, then the partial autocorrelations are parameterized as 
+If `pacf_map == "monahan"`, then the partial autocorrelations are parameterized as 
     P = x/√(1 + x²) 
 
 If `negative_signs == true` 
@@ -41,7 +41,7 @@ coefficients are for polynomial
 
 # Examples
 ```julia-repl
-julia> ϕ, partials = arma_reparam([-4.0,4.0]; ztrans = "monahan");ϕ
+julia> ϕ, partials = arma_reparam([-4.0,4.0]; pacf_map = "monahan");ϕ
 2-element Vector{Float64}:
  -0.028966029557096595
  0.9701425001453319
@@ -49,18 +49,18 @@ julia> check_stationarity(ϕ)[1] # second element would return the eigenvalues
 true
 ```
 """ 
-function arma_reparam(x; ztrans = "monahan", threshold = nothing, negative_signs = true)
+function arma_reparam(x; pacf_map = "monahan", threshold = nothing, negative_signs = true)
     
     p = length(x)
-    if ztrans == "sigmoid"
+    if pacf_map == "sigmoid"
         P = (exp.(x) .- 1) ./ (exp.(x) .+ 1 )
         P[x .>= 700] = (1 .- exp.(-x[x .>= 700])) ./ (1 .+ exp.(-x[x .>= 700]))
-    elseif ztrans == "monahan"
+    elseif pacf_map == "monahan"
         P = x./sqrt.(1 .+ x.^2)
-    elseif ztrans == "linear" # No transformation
+    elseif pacf_map == "linear" # No transformation
         return x, NaN
     else
-        error("ztrans must be either 'sigmoid' or 'monahan'")
+        error("pacf_map must be either 'sigmoid' or 'monahan'")
     end
 
     if !isnothing(threshold)
@@ -89,14 +89,14 @@ function arma_reparam(x; ztrans = "monahan", threshold = nothing, negative_signs
 end
 
 """ 
-    inv_arma_reparam(ϕ; ztrans = "monahan") 
+    inv_arma_reparam(ϕ; pacf_map = "monahan") 
 
 Converts from some AR parameters down to the unrestricted parameters. This inverts numerically, so inefficient.
 
 """ 
-function inv_arma_reparam(ϕ; ztrans = "monahan")
+function inv_arma_reparam(ϕ; pacf_map = "monahan")
 
-    f(θ,p) = arma_reparam(θ; ztrans)[1] - ϕ
+    f(θ,p) = arma_reparam(θ; pacf_map)[1] - ϕ
     u0 = zeros(length(ϕ))
     prob = NonlinearProblem(f, u0)
     return solve(prob).u
@@ -114,7 +114,7 @@ Returns a tuple where first element is `true` if stationary. Second element is a
 
 # Examples
 ```julia-repl
-julia> ϕ, P = arma_reparam([-4,4]; ztrans = "monahan") # returns ϕ which is stationary.
+julia> ϕ, P = arma_reparam([-4,4]; pacf_map = "monahan") # returns ϕ which is stationary.
 2-element Vector{Float64}:
  -0.028966029557096595
  0.9701425001453319
@@ -130,16 +130,16 @@ function check_stationarity(ϕ::Vector)
 end
 
 """ 
-    sarma_reparam(θ::Vector, Θ::Vector, s, activeLags; ztrans = "monahan", threshold = nothing, negative_signs = true) 
+    sarma_reparam(θ::Vector, Θ::Vector, s, activeLags; pacf_map = "monahan", threshold = nothing, negative_signs = true) 
 
 Takes a p-dim vector `θ` with regular AR/MA coefficients and a P-dim vector with seasonal AR/MA coefficients `Θ` (with season `s`) and returns the *non-zero* coefficients in the product polynomial 
 (1 - ϕ₁B - ϕ₂B² - ....)(1 - Φ₁B - Φ₂B² - ....) = (1 - ψ₁B - Ψ₂B² - ....) 
 where both sets of parameters (ϕ and Φ) are restricted to the have roots outside the unit circle, i.e. stationary(AR) or invertible (MA). The mapping is performed via the partial autocorrelations, P as: θ -> P₁ -> ϕ and Θ -> P₂ -> Φ. 
 
-If `ztrans == "sigmoid"`, then the partial autocorrelations are parameterized as 
+If `pacf_map == "sigmoid"`, then the partial autocorrelations are parameterized as 
     P = (exp(x) - 1) / (exp(x) + 1 )
 
-If `ztrans == "monahan"`, then the partial autocorrelations are parameterized as 
+If `pacf_map == "monahan"`, then the partial autocorrelations are parameterized as 
     P = x/√(1 + x²) 
 
 If `negative_signs == true` 
@@ -149,7 +149,7 @@ coefficients are for polynomial
         1 + ϕ₁B + ϕ₂B² + .... which is typically used for MA
 
 """ 
-function sarma_reparam(θ, Θ, s, activeLags = nothing; ztrans = "monahan", 
+function sarma_reparam(θ, Θ, s, activeLags = nothing; pacf_map = "monahan", 
         threshold = nothing, negative_signs = true)
 
     p = length(θ)
@@ -157,9 +157,9 @@ function sarma_reparam(θ, Θ, s, activeLags = nothing; ztrans = "monahan",
     if isnothing(activeLags)
         activeLags = FindActiveLagsSAR(p, P, s)
     end
-    ϕ = arma_reparam(θ; ztrans = ztrans, threshold = threshold, 
+    ϕ = arma_reparam(θ; pacf_map = pacf_map, threshold = threshold, 
         negative_signs = negative_signs)[1] .+ eps()
-    Φ = arma_reparam(Θ; ztrans = ztrans, threshold = threshold, 
+    Φ = arma_reparam(Θ; pacf_map = pacf_map, threshold = threshold, 
         negative_signs = negative_signs)[1] .+ eps()
     ARpoly =  Polynomial([1;-ϕ], :z)
     ARseasonpolymat = [zeros(s-1,P);-Φ']; 
